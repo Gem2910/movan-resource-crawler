@@ -1,0 +1,13 @@
+{
+  "name": "movan-resource-crawler-vercel",
+  "version": "1.0.0",
+  "description": "Automated Resource Crawler and Dead Link Validator on Vercel Serverless",
+  "main": "api/cron.js",
+  "scripts": {
+    "start": "node api/cron.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "googleapis": "^144.0.0"
+  }
+}
