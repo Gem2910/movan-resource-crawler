@@ -129,12 +129,17 @@ async function crawlApis() {
       const match = line.match(/\|\s*\[(.*?)\]\((https?:\/\/.*?)\)\s*\|\s*(.*?)\s*\|\s*(.*?)\s*\|\s*(.*?)\s*\|\s*(.*?)\s*\|/);
       if (match) {
         const authType = match[4].trim().replace(/`/g, '') || 'No Auth';
+        const titleStr = match[1].trim();
+        const descStr = match[3].trim();
+        const isTool = /mcp|cli|sdk|extension|plugin|library|utility|tool|tools|platform|generator|compiler|formatter|linter|debugger|gui|docker|framework|scraper/i.test(titleStr) ||
+                       (!/api|apis|rest|graphql|endpoint/i.test(titleStr) && /mcp|cli|sdk|extension|plugin|utility|tool|tools|generator|formatter|linter|debugger|gui|docker/i.test(descStr));
+
         items.push({
-          title: match[1].trim(),
+          title: titleStr,
           category: currentCategory,
-          tab: '🔑 Free API Keys & Tools',
-          description: match[3].trim(),
-          type: authType === 'No' ? 'Free (Không cần Key)' : `Free Key (${authType})`,
+          tab: isTool ? '🛠️ Developer Tools' : '🔑 Free API Keys',
+          description: descStr,
+          type: isTool ? 'Free Tool' : (authType === 'No' ? 'Free (Không cần Key)' : `Free Key (${authType})`),
           link: match[2].trim()
         });
       }
@@ -179,7 +184,7 @@ async function crawlSocialKeywords() {
     { cat: 'Thiết Kế Đồ Họa', q: '\"kho tài nguyên\" OR \"mockup\" OR \"font việt hóa\"', tab: '🎨 Thiết Kế Đồ Họa' },
     { cat: 'Prompt AI', q: '\"prompt ai\" OR \"midjourney\"', tab: '🤖 Prompt AI & Cheatsheet' },
     { cat: 'Khóa Học', q: '\"khóa học miễn phí\" OR \"tài liệu lập trình\"', tab: '📚 Tài Liệu & Khóa Học' },
-    { cat: 'Free API / AI', q: '\"free api\" OR \"api miễn phí\"', tab: '🔑 Free API Keys & Tools' }
+    { cat: 'Free API / AI', q: '\"free api\" OR \"api miễn phí\"', tab: '🔑 Free API Keys' }
   ];
 
   for (const kw of searchKeywords) {
@@ -228,7 +233,7 @@ module.exports = async function handler(req, res) {
 
     // 2. Đọc toàn bộ link hiện có trên Sheet để tránh trùng lặp
     const existingLinks = new Set();
-    const tabs = ['🎨 Thiết Kế Đồ Họa', '🔑 Free API Keys & Tools', '🤖 Prompt AI & Cheatsheet', '🌐 Tài Nguyên Threads & MXH'];
+    const tabs = ['🎨 Thiết Kế Đồ Họa', '🔑 Free API Keys', '🛠️ Developer Tools', '🤖 Prompt AI & Cheatsheet', '🌐 Tài Nguyên Threads & MXH'];
 
     for (const tab of tabs) {
       try {
